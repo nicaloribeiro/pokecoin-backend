@@ -1,4 +1,5 @@
 const PokemonAcquired = require('../models/PokemonAcquired');
+const { postPurchaseHistoric } = require('../controller/TransactionHistoryController');
 
 const postPokemonAcquired = async (req, res) => {
     const { 
@@ -18,9 +19,11 @@ const postPokemonAcquired = async (req, res) => {
 
     try {
         const pokemonAcquiredSaved = await pokemonToSave.save();
+        const historySaved = await postPurchaseHistoric({ pokemonId: pokemonAcquiredSaved._id });
+        
         return res.status(200).json({ 
             message: 'Pokemon salvo com sucesso!',
-            data: pokemonAcquiredSaved
+            data: { pokemon: pokemonAcquiredSaved, historic: historySaved }
         });
     } catch (error) {
         return res.status(400).json({ 
