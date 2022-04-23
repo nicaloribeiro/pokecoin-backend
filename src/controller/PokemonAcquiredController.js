@@ -20,7 +20,7 @@ const postPokemonAcquired = async (req, res) => {
         const pokemonAcquiredSaved = await pokemonToSave.save();
         return res.status(200).json({ 
             message: 'Pokemon salvo com sucesso!',
-            data: {pokemonAcquiredSaved}
+            data: pokemonAcquiredSaved
         });
     } catch (error) {
         return res.status(400).json({ 
@@ -30,4 +30,19 @@ const postPokemonAcquired = async (req, res) => {
     }
 };
 
-module.exports = { postPokemonAcquired };
+const getAllPokemonAcquired = async (req, res) => {
+    try {
+        const getAllPokemonsAcquired = await PokemonAcquired.find();
+        return res.status(200).json({ 
+            message: 'Pokemons recuperados com sucesso! ',
+            data: getAllPokemonsAcquired
+        });
+    } catch (error) {
+        return res.status(400).json({
+            message: 'Houve um problema ao recuperar a lista de pokemons.',
+            errorMessage: error
+        });
+    }
+};
+
+module.exports = { postPokemonAcquired, getAllPokemonAcquired };
