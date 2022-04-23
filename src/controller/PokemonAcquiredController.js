@@ -19,8 +19,8 @@ const postPokemonAcquired = async (req, res) => {
 
     try {
         const pokemonAcquiredSaved = await pokemonToSave.save();
-        const historySaved = await postPurchaseHistoric({ pokemonId: pokemonAcquiredSaved._id });
-        
+        const historySaved = await postPurchaseHistoric({ pokemonId: pokemonAcquiredSaved._id, transactionType: 'BUY' });
+
         return res.status(200).json({ 
             message: 'Pokemon salvo com sucesso!',
             data: { pokemon: pokemonAcquiredSaved, historic: historySaved }
@@ -48,4 +48,25 @@ const getAllPokemonAcquired = async (req, res) => {
     }
 };
 
-module.exports = { postPokemonAcquired, getAllPokemonAcquired };
+const postPokemonAcquiredSale = async (req, res) => {
+    const { pokemonAcquiredId } = req.params;
+       
+    try {
+        const pokemonAcquiredUpdated = await PokemonAcquired.findByIdAndUpdate( pokemonAcquiredId, { inWallet: false });
+        const historicUpdated = await postPurchaseHistoric({ pokemonId: pokemonAcquiredId, transactionType: 'SALE'});
+        return res.status(200).json({
+            message: 'Seu pokemon foi vendido!',
+            data: {
+                pokemon: pokemonAcquiredUpdated,
+                historic: historicUpdated
+            }
+        })
+    } catch (error) {
+        return res.status(400).json({ 
+            message: 'Houve um problema ao salvar o Pokemon.',
+            errorMessage: error
+        });
+    }
+}
+
+module.exports = { postPokemonAcquired, getAllPokemonAcquired, postPokemonAcquiredSale };
