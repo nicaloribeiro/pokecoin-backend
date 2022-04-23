@@ -9,21 +9,20 @@ const getBtcCurrency = async () => {
 }
 
 const postPurchaseHistoric = async (payload) => {
-    const { pokemonId } = payload;
+    const { pokemonId, transactionType } = payload;
     try {
         const btcCurrency = await getBtcCurrency();
-
         const transactionToSave = new TransactionHistory({
-            transactionType: 'BUY',
+            transactionType,
             btcCurrency,
             pokemonId
         });
-
         const transactionSaved = await transactionToSave.save();
         return transactionSaved;
     } catch (error) {
-        return error;
+        console.log(error)
+        throw error;
     }
-}
+};
 
 module.exports = { postPurchaseHistoric }
