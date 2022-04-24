@@ -7,11 +7,10 @@ const calculatePokemonUsdValue = ({btcCurrency, pokemonExperience}) => parseFloa
 
 const getWalletProfit = (transactionHistory) => {
     const profit = transactionHistory.reduce((total, transaction) => {
-        const { btcCurrency } = transaction
-        const { pokemonExperience } = transaction.pokemonId
+        const { pokemonUsdValue } = transaction
         transaction.transactionType === 'BUY' ? 
-        total.profit -= calculatePokemonUsdValue({btcCurrency, pokemonExperience}) :
-        total.profit += calculatePokemonUsdValue({btcCurrency, pokemonExperience})
+        total.profit -= pokemonUsdValue :
+        total.profit += pokemonUsdValue
         return total;
     }, { profit : 0});
 
