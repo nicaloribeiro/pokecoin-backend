@@ -1,5 +1,6 @@
 const PokemonAcquired = require('../models/PokemonAcquired');
-const { postPurchaseHistoric, getAllTransactionHistoryByPokemonId } = require('../controller/TransactionHistoryController');
+const { postPurchaseHistoric, getAllTransactionHistoryByPokemonId, } = require('../controller/TransactionHistoryController');
+const { getCurrentInvested } = require('../utils/index');
 
 const postPokemonAcquired = async (req, res) => {
     const { 
@@ -78,12 +79,16 @@ const getAllPokemonsAcquiredInWallet = async (req, res) => {
         const pokemonsActives = await PokemonAcquired.find({ inWallet: true });
         const historic = await Promise.all(pokemonsActives.map(async (pokemon) => {
             const data = await getAllTransactionHistoryByPokemonId({ pokemonId: pokemon._id});
-            return data
+            return data[0];
         }));
-        console.log(historic)
+        const currentInvested = getCurrentInvested(historic);
+
         return res.status(200).json({ 
             message: 'Histórico dos pokemons ativos recuperados com sucesso!',
-            data: historic
+            data: {
+                currentInvested,
+                pokemons: historic
+            }
         });
     } catch (error) {
         return res.status(400).json({
