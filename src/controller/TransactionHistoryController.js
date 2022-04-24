@@ -1,6 +1,7 @@
 require("dotenv").config();
 const axios = require('axios').default;
 const TransactionHistory = require('../models/TransactionHistory');
+const { getWalletProfit } = require('../utils/walletcalcs');
 
 const getBtcCurrency = async () => {
     const response = await axios.get(process.env.COINBASE_API);
@@ -27,10 +28,14 @@ const postPurchaseHistoric = async (payload) => {
 
 const getAllTransactionHistory = async (req, res) => {
     try {
-        const getAllTransactionsHistory = await TransactionHistory.find();
+        const getAllTransactionsHistory = await TransactionHistory.find().populate('pokemonId').exec();
+        const profit = getWalletProfit(getAllTransactionsHistory);        
         return res.status(200).json({ 
             message: 'Histórico recuperado com sucesso! ',
-            data: getAllTransactionsHistory
+            data: {
+                currentProfit: profit,
+                transactions: getAllTransactionsHistory
+            }
         });
     } catch (error) {
         return res.status(400).json({
