@@ -6,7 +6,7 @@ const getBtcCurrency = async () => {
     const response = await axios.get(process.env.COINBASE_API);
     const { amount } = response.data.data;
     return amount;
-}
+};
 
 const postPurchaseHistoric = async (payload) => {
     const { pokemonId, transactionType } = payload;
@@ -25,4 +25,19 @@ const postPurchaseHistoric = async (payload) => {
     }
 };
 
-module.exports = { postPurchaseHistoric }
+const getAllTransactionHistory = async (req, res) => {
+    try {
+        const getAllTransactionsHistory = await TransactionHistory.find();
+        return res.status(200).json({ 
+            message: 'Histórico recuperado com sucesso! ',
+            data: getAllTransactionsHistory
+        });
+    } catch (error) {
+        return res.status(400).json({
+            message: 'Houve um problema ao recuperar o histórico de transações.',
+            errorMessage: error
+        });
+    }
+};
+
+module.exports = { postPurchaseHistoric, getAllTransactionHistory }
