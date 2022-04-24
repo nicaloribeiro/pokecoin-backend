@@ -1,5 +1,5 @@
 const PokemonAcquired = require('../models/PokemonAcquired');
-const { postPurchaseHistoric } = require('../controller/TransactionHistoryController');
+const { postPurchaseHistoric, getAllTransactionHistoryByPokemonId } = require('../controller/TransactionHistoryController');
 
 const postPokemonAcquired = async (req, res) => {
     const { 
@@ -19,7 +19,7 @@ const postPokemonAcquired = async (req, res) => {
 
     try {
         const pokemonAcquiredSaved = await pokemonToSave.save();
-        const historySaved = await postPurchaseHistoric({ pokemonId: pokemonAcquiredSaved._id, transactionType: 'BUY' });
+        const historySaved = await postPurchaseHistoric({ pokemonId: pokemonAcquiredSaved._id, pokemonExperience, transactionType: 'BUY' });
 
         return res.status(200).json({ 
             message: 'Pokemon salvo com sucesso!',
@@ -52,12 +52,12 @@ const postPokemonAcquiredSale = async (req, res) => {
     const { pokemonAcquiredId } = req.params;
        
     try {
-        const pokemonAcquiredToUpdate = await PokemonAcquired.findById(pokemonAcquiredId);
+        const {inWallet, pokemonExperience} = await PokemonAcquired.findById(pokemonAcquiredId);
         
-        if(!pokemonAcquiredToUpdate.inWallet) return res.status(400).json({ message: 'O pokemon já foi vendido.'});
+        if(!inWallet) return res.status(400).json({ message: 'O pokemon já foi vendido.'});
 
         const pokemonAcquiredUpdated = await PokemonAcquired.findByIdAndUpdate( pokemonAcquiredId, { inWallet: false });
-        const historicUpdated = await postPurchaseHistoric({ pokemonId: pokemonAcquiredId, transactionType: 'SALE'});
+        const historicUpdated = await postPurchaseHistoric({ pokemonId: pokemonAcquiredId, pokemonExperience, transactionType: 'SALE'});
         return res.status(200).json({
             message: 'Seu pokemon foi vendido!',
             data: {
@@ -71,6 +71,26 @@ const postPokemonAcquiredSale = async (req, res) => {
             errorMessage: error
         });
     }
+};
+
+const getAllPokemonsAcquiredInWallet = async (req, res) => {
+    try {
+        const pokemonsActives = await PokemonAcquired.find({ inWallet: true });
+        const historic = await Promise.all(pokemonsActives.map(async (pokemon) => {
+            const data = await getAllTransactionHistoryByPokemonId({ pokemonId: pokemon._id});
+            return data
+        }));
+        console.log(historic)
+        return res.status(200).json({ 
+            message: 'Histórico dos pokemons ativos recuperados com sucesso!',
+            data: historic
+        });
+    } catch (error) {
+        return res.status(400).json({
+            message: 'Houve um problema ao recuperar o histórico de pokemons.',
+            errorMessage: error
+        });
+    }
 }
 
-module.exports = { postPokemonAcquired, getAllPokemonAcquired, postPokemonAcquiredSale };
+module.exports = { postPokemonAcquired, getAllPokemonAcquired, postPokemonAcquiredSale, getAllPokemonsAcquiredInWallet };
