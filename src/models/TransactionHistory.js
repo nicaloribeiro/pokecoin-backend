@@ -8,6 +8,7 @@ const transactionTypeEnum = {
 
 const transactionHistorySchema = new Schema({
     btcCurrency: { type: String, required: true },
+    pokemonUsdValue: { type: Number, required: true},
     transactionType : { 
         type: String,
         enum: Object.values(transactionTypeEnum),
