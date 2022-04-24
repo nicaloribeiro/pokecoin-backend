@@ -42,7 +42,7 @@ const getAllTransactionHistory = async (req, res) => {
 const getAllTransactionHistoryByPokemonId = async (payload) => {
     const { pokemonId } = payload;
     try {
-        const transactions = await TransactionHistory.find({ pokemonId });
+        const transactions = await TransactionHistory.find({ pokemonId }).populate('pokemonId').exec();
         return transactions;
     } catch (error) {
         console.log(error)
