@@ -6,6 +6,7 @@ const pokemonAcquiredSchema = new Schema({
     pokemonName: { type: String, required: true },
     pokemonExperience: { type: Number, required: true },
     pokemonSpriteUrl: { type: String, required: true },
+    pokemonType: { type: String, required: true },
     inWallet: { type: Boolean, required: true}
 });
 

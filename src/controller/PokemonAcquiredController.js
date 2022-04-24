@@ -7,7 +7,8 @@ const postPokemonAcquired = async (req, res) => {
         pokemonId,
         pokemonName,
         pokemonExperience,
-        pokemonSpriteUrl
+        pokemonSpriteUrl,
+        pokemonType
     } = req.body;
 
     const pokemonToSave = new PokemonAcquired({
@@ -15,6 +16,7 @@ const postPokemonAcquired = async (req, res) => {
         pokemonName,
         pokemonExperience,
         pokemonSpriteUrl,
+        pokemonType,
         inWallet: true
     });
 
