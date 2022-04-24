@@ -24,7 +24,6 @@ const getBtcCurrency = async () => {
 };
 
 const getCurrentInvested = (transactions) => {
-    console.log(transactions)
     const currentInvested = transactions.reduce((total, transaction) => {
         const { pokemonUsdValue } = transaction
         total.invested += pokemonUsdValue
