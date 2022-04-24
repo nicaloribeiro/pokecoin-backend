@@ -7,7 +7,7 @@ const calculatePokemonUsdValue = ({btcCurrency, pokemonExperience}) => parseFloa
 
 const getWalletProfit = (transactionHistory) => {
     const profit = transactionHistory.reduce((total, transaction) => {
-        const { pokemonUsdValue } = transaction
+        const { pokemonUsdValue } = transaction;
         transaction.transactionType === 'BUY' ? 
         total.profit -= pokemonUsdValue :
         total.profit += pokemonUsdValue
@@ -23,4 +23,15 @@ const getBtcCurrency = async () => {
     return amount;
 };
 
-module.exports = { getWalletProfit, calculatePokemonUsdValue, getBtcCurrency };
+const getCurrentInvested = (transactions) => {
+    console.log(transactions)
+    const currentInvested = transactions.reduce((total, transaction) => {
+        const { pokemonUsdValue } = transaction
+        total.invested += pokemonUsdValue
+        return total;
+    }, { invested : 0});
+    
+    return currentInvested;
+}
+
+module.exports = { getWalletProfit, calculatePokemonUsdValue, getBtcCurrency, getCurrentInvested };
