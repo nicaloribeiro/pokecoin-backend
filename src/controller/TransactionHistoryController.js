@@ -1,20 +1,14 @@
-require("dotenv").config();
-const axios = require('axios').default;
 const TransactionHistory = require('../models/TransactionHistory');
-const { getWalletProfit } = require('../utils/walletcalcs');
-
-const getBtcCurrency = async () => {
-    const response = await axios.get(process.env.COINBASE_API);
-    const { amount } = response.data.data;
-    return amount;
-};
+const { getWalletProfit, getBtcCurrency, calculatePokemonUsdValue } = require('../utils');
 
 const postPurchaseHistoric = async (payload) => {
-    const { pokemonId, transactionType } = payload;
+    const { pokemonId, pokemonExperience, transactionType } = payload;
     try {
         const btcCurrency = await getBtcCurrency();
+        const pokemonUsdValue = calculatePokemonUsdValue({ btcCurrency, pokemonExperience});
         const transactionToSave = new TransactionHistory({
             transactionType,
+            pokemonUsdValue,
             btcCurrency,
             pokemonId
         });
@@ -45,4 +39,15 @@ const getAllTransactionHistory = async (req, res) => {
     }
 };
 
-module.exports = { postPurchaseHistoric, getAllTransactionHistory }
+const getAllTransactionHistoryByPokemonId = async (payload) => {
+    const { pokemonId } = payload;
+    try {
+        const transactions = await TransactionHistory.find({ pokemonId });
+        return transactions;
+    } catch (error) {
+        console.log(error)
+        throw error;
+    }
+}
+
+module.exports = { postPurchaseHistoric, getAllTransactionHistory, getAllTransactionHistoryByPokemonId }
