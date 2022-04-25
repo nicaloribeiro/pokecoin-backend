@@ -18,10 +18,6 @@ try {
 const dbhandler = database.mongoose.connection
 dbhandler.on('error', console.error.bind(console, 'Erro na conexão com o MongoDB:'));
 
-app.get('/api/helloworld', function(req, res) {
-    res.status(200).json({data: 'hello world'});
-});
-
 app.listen(port, () => {
     console.log(`Servidor rodando na porta ${port} !`);
 });
